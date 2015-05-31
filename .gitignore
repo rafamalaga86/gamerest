@@ -1,0 +1,6 @@
+.env.*.php
+.env.php
+.DS_Store
+Thumbs.db
+gamerest.sublime-project
+gamerest.sublime-workspace
