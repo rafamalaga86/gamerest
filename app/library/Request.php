@@ -6,6 +6,12 @@ class Request {
 	private $url;
 	private $segments;
 	private $content_type = 'text/plain';
+	private $resource;
+	private $controllerClassName;
+	private $controllerFileName;
+	private $actionMethodName;
+	private $modelFileName;
+	private $bodyParams = NULL;
 
 
 	public function __construct($server) {
@@ -16,20 +22,52 @@ class Request {
 		$this->segments = explode('/', $this->url);
 		array_shift($this->segments);
 
-		if (isset($server['CONTENT_TYPE'])) $this->content_type = $server['CONTENT_TYPE'];
+		if ( isset($server['CONTENT_TYPE']) ) 
+			$this->content_type = $server['CONTENT_TYPE'];
+
+		$this->resource = ucfirst(array_shift( $this->segments ));
+		$this->controllerClassName = $this->resource . 'Controller';
+		$this->controllerFileName = 'controllers/' . $this->controllerClassName . '.php';
+		$this->actionMethodName = $this->verb . $this->resource;
+		$this->modelFileName = 'models/' . $this->resource . '.php';
+
+		if ( $this->verb == 'put' || $this->verb == 'post' )
+				$this->bodyParams = $this->parseBodyParams();
+
+	}
+
+	public function parseBodyParams() {
+
+			if ( $this->getContentType() != 'application/json'){
+
+				die('404 Is not application/json');
+			}
+
+			$bodyParams = array();
+			$body = file_get_contents("php://input");
+
+			if ( ! Validation::isJson($body) )
+				die("400 Bad request;");
+
+			$bodyParams = json_decode($body, true);
+
+			return $bodyParams;
 
 	}
 
 
 	public function process($db) {
 
-		$segments = $this->getSegments();
+		$verb 					= $this->getVerb();
+		$resource				= $this->getResource();
+		$controllerClassName 	= $this->getControllerClassName();
+		$controllerFileName 	= $this->getControllerFileName();
+		$actionMethodName 		= $this->getActionMethodName();
+		$modelFileName			= $this->getModelFileName();
+		$bodyParams				= $this->getBodyParams();
 
-		$resource				= ucfirst(array_shift( $segments ));
-		$controllerClassName 	= $resource . 'Controller';
-		$controllerFileName 	= 'controllers/' . $controllerClassName . '.php';
-		$actionMethodName 		= $this->getVerb() . $resource;
-		$params 				= $segments;
+		$params 				= $this->getSegments();
+		$id 					= $this->getId($params);
 
 
 		if ( ! file_exists($controllerFileName) ){
@@ -40,50 +78,111 @@ class Request {
 
 		}
 
+		// $this->takeRequestBody();
 
 
-		if ( $this->getVerb() != 'get' && $this->getVerb() != 'delete' ){
 
-			if ( $this->getContentType() != 'application/json'){
+		if ( $verb == 'get' || $verb == 'delete') {
 
-				// $error = json_encode('400: Bad request.');
-				// return Response::json($error, 404);
-				die('404 Is not application/json');
-			}
+			$function_params = [$db, $id];
 
-			$params = array();
-			$body = file_get_contents("php://input");
-			parse_str($body, $params);
+		} elseif ($verb == 'put') {
 
+			$function_params = [$db, $id, $bodyParams];
+
+		} else if ($verb == 'post') {
+
+			$function_params = [$db, $bodyParams];
+
+		} else {
+
+			die('400 Bad requests');
 		}
 
+		require $modelFileName;
 		require $controllerFileName;
 
-		$params[] = $db;
-
-		var_dump($params);
-
 		$controller = new $controllerClassName();
-		$response = call_user_func_array([$controller, $actionMethodName], $params);
+		$response = call_user_func_array([$controller, $actionMethodName], $function_params);
 
-		// $this->executeResponse($response);
+		$this->execute($response);
 	}
 
 
-	public function getVerb (){
+	private function execute($response = NULL){
+
+		if (is_string($response)) {
+
+			echo $response;
+
+		} elseif (is_array($response)){
+
+			echo json_encode($response);
+
+		}else {
+
+			die("500: Invalid response: TYPE IS:" .  print_r($response));
+
+		}
+	}
+
+
+	private function getId($params){
+
+		return array_shift($params);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public function getModelFileName() {
+		return $this->modelFileName;
+	}
+
+	public function getVerb() {
 		return $this->verb;
 	}
 
-	public function getUrl (){
+	public function getUrl() {
 		return $this->url;
 	}
 
-	public function getSegments (){
+	public function getSegments() {
 		return $this->segments;
 	}
 
-	public function getContentType (){
+	public function getContentType() {
 		return $this->content_type;
 	}
 
+	public function getResource() {
+		return $this->resource;
+	}
+
+	public function getControllerClassName() {
+		return $this->controllerClassName;
+	}
+
+	public function getControllerFileName() {
+		return $this->controllerFileName;
+	}
+
+	public function getActionMethodName() {
+		return $this->actionMethodName;
+	}
+
+	public function getBodyParams() {
+		return $this->bodyParams;
+	}
 }

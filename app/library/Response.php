@@ -2,13 +2,12 @@
 
 class Response {
 
-	static public function json($content, $status_code) {
-
-		echo json_encode($content);
+	public function execute($body, $status_code) {
 
 		header('Content-Type: application/json');
+		
 		http_response_code($status_code);
-		exit();
 
+		echo json_encode($body);
 	}
 }
