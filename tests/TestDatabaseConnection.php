@@ -6,16 +6,16 @@ require_once __DIR__ . '/../app/library/Response.php';
 class TestDatabase extends PHPUnit_Framework_TestCase {
 
 
-	public function testDatabaseSelectBehaviour () {
+	public function testDatabaseSelectRowByIDBehaviour () {
 
 		require __DIR__ . '/config/database_test.php';
 
 		$db = new DatabaseConnection($host, $database, $user, $password);
 
 		// Test of a character that actually exist
-		$id = 3;
-		$actual = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id);
-		$expected = [
+		$id1 = 3;
+		$actual1 = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id1);
+		$expected1 = [
 			'id' 			=> '3',
 			'name' 			=> 'Peter Akarisawa',
 			'description' 	=> 'The greatest cyborg samurai golf player',
@@ -25,8 +25,15 @@ class TestDatabase extends PHPUnit_Framework_TestCase {
 			'hp' 			=> '45'
 		];
 
-		$this->assertNotEmpty($expected, 'function select returning an empty value');
-		$this->assertEquals($expected, $actual);
+
+		$id2 = 8888;
+		$actual2 = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id2);
+
+		$this->assertNotEmpty($expected1, 'function select returning an empty value');
+		$this->assertEquals($expected1, $actual1, 'Expected and actual not matching.');
+
+		$this->assertEmpty($actual2, 'message');
+
 	}
 
 

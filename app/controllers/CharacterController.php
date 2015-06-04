@@ -4,9 +4,7 @@ class CharacterController {
 
 	public function getCharacter(DatabaseConnection $db, $id) {
 
-		$array = $db->selectRowByID('SELECT * FROM characters WHERE id LIKE ?', $id);
-
-		return $array;
+		return Character::find($db, $id);
 	}
 
 	public function postCharacter(DatabaseConnection $db, $params) {
@@ -23,35 +21,17 @@ class CharacterController {
 
 	public function putCharacter(DatabaseConnection $db, $id, $params) {
 
-		$params['id'] = $id;
+		Character::update($db, $id, $params);
 
-		$result = $db->query("UPDATE characters SET
+		$character = Character::find($db, $id);
 
-			name 		= :name,
-			description = :description,
-			type		= :type,
-			dead		= :dead,
-			stage		= :stage,
-			hp			= :hp
-
-			WHERE id = :id", $params );
-
-		$array = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id);
-
-		return $array;
+		return $character;
 	}
 
 	public function deleteCharacter(DatabaseConnection $db, $id) {
 
+		Character::delete($db, $id);
 
-		$success = $db->query('DELETE FROM characters WHERE id = ?;', [$id]);
-
-		if ($success){
-
-			$string = '{}';
-
-		}
-
-		return $string;
+		return '{}';
 	}
 }

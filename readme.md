@@ -1,9 +1,17 @@
 
+Quizá cambiar find por select
+
 Check always integrity of data given. Not done.
+
+Falta por terminar TestCharacter.
+
+Models are the ones that throw exceptions and Controllers catch them.
 
 Check if the Exception should be in the documentation.
 
 Where is validated the whole json??? Before and after.
+
+Chose to use the model in a static way
 
 
 # Gamerest
@@ -68,7 +76,7 @@ DELETE 		Remove a character
 
 All of the four are idempontent except POST.
 
-## Status code
+## Status codes
 
 200		Success
 201		Success - new character created
@@ -168,5 +176,8 @@ Response
 }
 
 
+## Check the integrity of the data
 
-## Comprobar la integridad de los datos
+Commment out the error activators
+
+## Request is handling response

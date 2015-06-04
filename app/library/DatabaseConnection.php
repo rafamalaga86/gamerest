@@ -33,7 +33,8 @@ class DatabaseConnection {
 		}
 
 		catch (PDOException $exception) {
-			die('500');
+			
+			throw new StatusCodeException(500);
 		}
 
 		$this->pdo = $pdo;
@@ -47,27 +48,19 @@ class DatabaseConnection {
 	 *
 	 * @param string $query The SELECT query
 	 * @param array $values Array of values that the select query would need
-	 * @return array $result Row selected
+	 * @return array $result Row selected, NULL if empty
 	 */
 	public function selectRowByID ($query, $values = NULL) {
 
-		try {
+		$statement = $this->pdo->prepare( $query );
+		$statement->execute( [$values] );
 
-			$statement = $this->pdo->prepare( $query );
-			$statement->execute( [$values] );
+		$result = $statement->fetch(PDO::FETCH_ASSOC);
 
-			$result = $statement->fetch(PDO::FETCH_ASSOC);
+		if ( $result === false ) 
+			$result = NULL;
 
-			if ( ! $result ) throw new PDOException("404 Not found");
-
-			return $result;
-		}
-
-		catch (PDOException $exception) {
-
-			die("Error: " . $exception->getMessage() );
-		}
-
+		return $result;
 	}
 
 
@@ -82,21 +75,10 @@ class DatabaseConnection {
 	 */
 	public function query ($query, $values = NULL) {
 
-		try {
+		$statement = $this->pdo->prepare( $query );
+		$success = $statement->execute( $values );
 
-			$statement = $this->pdo->prepare( $query );
-			$success = $statement->execute( $values );
-
-			if ( ! $success ) throw new PDOException("404 QUERY FAILS");
-
-			return $success;
-		}
-
-		catch (PDOException $exception) {
-
-			die("Error: " . $exception->getMessage() );
-		}
-
+		return $success;
 	}
 
 

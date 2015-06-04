@@ -5,13 +5,14 @@ class Request {
 	private $verb;
 	private $url;
 	private $segments;
-	private $content_type = 'text/plain';
+	private $contentType = 'text/plain';
 	private $resource;
 	private $controllerClassName;
 	private $controllerFileName;
 	private $actionMethodName;
 	private $modelFileName;
 	private $bodyParams = NULL;
+	private $statusCode = 200;
 
 
 	public function __construct($server) {
@@ -23,7 +24,7 @@ class Request {
 		array_shift($this->segments);
 
 		if ( isset($server['CONTENT_TYPE']) ) 
-			$this->content_type = $server['CONTENT_TYPE'];
+			$this->contentType = $server['CONTENT_TYPE'];
 
 		$this->resource = ucfirst(array_shift( $this->segments ));
 		$this->controllerClassName = $this->resource . 'Controller';
@@ -38,16 +39,14 @@ class Request {
 
 	public function parseBodyParams() {
 
-			if ( $this->getContentType() != 'application/json'){
-
-				die('404 Is not application/json');
-			}
+			if ( $this->getContentType() != 'application/json')
+				$this->setStatusCode(400); // We only accept json at the momment
 
 			$bodyParams = array();
 			$body = file_get_contents("php://input");
 
 			if ( ! Validation::isJson($body) )
-				die("400 Bad request;");
+				$this->setStatusCode(400); // Data sent is not json
 
 			$bodyParams = json_decode($body, true);
 
@@ -70,16 +69,8 @@ class Request {
 		$id 					= $this->getId($params);
 
 
-		if ( ! file_exists($controllerFileName) ){
-
-			// $error = json_encode('404: Not found.');
-			// return Response::json($error, 404);
-			die('404 File does not exist');
-
-		}
-
-		// $this->takeRequestBody();
-
+		if ( ! file_exists($controllerFileName) )
+			$this->setStatusCode(400);
 
 
 		if ( $verb == 'get' || $verb == 'delete') {
@@ -96,34 +87,58 @@ class Request {
 
 		} else {
 
-			die('400 Bad requests');
+			$this->setStatusCode(400);
 		}
 
 		require $modelFileName;
 		require $controllerFileName;
 
 		$controller = new $controllerClassName();
-		$response = call_user_func_array([$controller, $actionMethodName], $function_params);
 
-		$this->execute($response);
+		try {
+
+			$responseBody = call_user_func_array([$controller, $actionMethodName], $function_params);
+
+		}
+
+		catch (StatusCodeException $exception) {
+
+			$code = $exception->getCode();
+			$this->setStatusCode( $code );
+			$responseBody = $exception->getMessage();
+
+		}
+
+
+		$this->execute($this->getStatusCode(), $responseBody);
 	}
 
 
-	private function execute($response = NULL){
+	private function execute($code, $responseBody = NULL){
 
-		if (is_string($response)) {
+		if ( is_string($responseBody) && $code == 200 ) {
 
-			echo $response;
+			http_response_code($code);
+			echo $responseBody;
 
-		} elseif (is_array($response)){
+		} elseif ( is_array($responseBody) && $code == 200 ){
 
-			echo json_encode($response);
+			http_response_code($code);
+			echo json_encode($responseBody);
 
-		}else {
+		} elseif ( $code == 200 ){ 
 
-			die("500: Invalid response: TYPE IS:" .  print_r($response));
+			 // There is a problem, if it is ok the response should be array or string
+			$code == 500;
+			http_response_code($code);
+
+		} else {
+
+			http_response_code($code);
 
 		}
+
+
 	}
 
 
@@ -163,7 +178,7 @@ class Request {
 	}
 
 	public function getContentType() {
-		return $this->content_type;
+		return $this->contentType;
 	}
 
 	public function getResource() {
@@ -184,5 +199,13 @@ class Request {
 
 	public function getBodyParams() {
 		return $this->bodyParams;
+	}
+
+	public function getStatusCode(){
+		return $this->statusCode;
+	}
+
+	public function setStatusCode( $code ) {
+		$this->statusCode = $code;
 	}
 }

@@ -16,11 +16,3 @@ $db = new DatabaseConnection($host, $database, $user, $password);
 
 $request = new Request($server);
 $request->process($db);
-
-
-
-/*
-
-$request->execute();
-
-*/
