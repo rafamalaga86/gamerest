@@ -32,7 +32,7 @@ class TestDatabase extends PHPUnit_Framework_TestCase {
 		$this->assertNotNull($expected1, 'The Character retrieved from DB is empty. Check TestDatabaseConnection::selectRowByID() and check that DB and its data is there and working');
 		$this->assertEquals($expected1, $actual1, 'Characters retrieved from DB not matching the one expected. Check TestDatabaseConnection::selectRowByID() and check that DB and its data is there and working');
 
-		$this->assertNull($actual2, 'message');
+		$this->assertNull($actual2, 'The function is returning something different than NULL for a non existent character');
 
 	}
 

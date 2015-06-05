@@ -28,12 +28,11 @@ class CharacterController {
 	 */
 	public function postCharacter(DatabaseConnection $db, $params) {
 
-		$db->query('INSERT INTO characters(name, description, type, dead, stage, hp) 
-			VALUES(:name, :description, :type, :dead, :stage, :hp);', $params);
+		Character::insert($db, $params);
 
-		$id = $db->lastID();
+		$id = Character::lastID($db);
 
-		$array = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id);
+		$array = Character::find($db, $id);
 
 		return $array;
 	}
@@ -72,6 +71,8 @@ class CharacterController {
 	 * @return string '{}'
 	 */
 	public function deleteCharacter(DatabaseConnection $db, $id) {
+
+		Character::find($db, $id);
 
 		Character::delete($db, $id);
 

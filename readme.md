@@ -1,24 +1,13 @@
-
-Quizá cambiar find por select
-
-Check always integrity of data given. Not done.
-
-Models are the ones that throw exceptions and Controllers catch them.
-
-Check if the Exception should be in the documentation.
-
-Where is validated the whole json??? Before and after.
-
-Chose to use the model in a static way
-
-
 # Gamerest
 
 Gamerest is a REST API for the game app "Ninja Golf 2: The revenge".
 
 Our brave ninja play golf in the field of their enemies. It is like an old 2D golf game, but our main character has to walk to the ball every time he hits it. In the way, he find enemies he has to defeat. As a part of the DLC, we could choose our main character to be a pirate. When the main character dies, he can continue playing as a zombie.
 
-The game consist in 10 stages. We only sync data when the character finish the stage, or when it dies. In the database, every character will count with this columns:
+This game will be something like:
+https://www.youtube.com/watch?v=maKuCZi7MEc
+
+It consist in 10 stages. We only sync data when the character finish the stage, or when it dies. In the database, every character will count with this columns:
 
 "name": The name of the character
 "description": Short description to make the player personalise a little their characters
@@ -28,13 +17,15 @@ The game consist in 10 stages. We only sync data when the character finish the s
 "hp": Hit points that the character has last time.
 
 
+
+This app use Apache. htaccess in the app folder is used to send everything to index.php . I try to maximise the semantic and legibility of my code, so the code explain itself and don't need too much documentation. 
+
+
 ## Tests
 
 Details of testing database are in /test/config/database_test.php and real database in /app/config/database.php . We are not using the app in production so at the momment they are the same.
 
-In most cases I find that document unit test is redundant because the functions are already documented and the test should be clear enough. I also try to maximise the semantic and legibility of my code, so the code explain itself and don't need too much documentation. 
-
-I am doing tests with database assuming some data inside. This data is inserted with the lines of mysql at the beginning of this file. I know Unit Test shouldn't rely on a database, but since I cannot use other packages that provides me more professional testing with databases, I was forced to do that.
+I am doing tests with database assuming some data inside. This data is inserted with the lines of mysql in the following section. I know Unit Test shouldn't rely on a database, but since I cannot use other packages that provides me more professional testing with databases, I was forced to do that.
 
 Regarding testing private methods: I am not doing that because it would break encapsulation. And all of those are part of a public one that is tested.
 
@@ -42,6 +33,10 @@ Regarding testing private methods: I am not doing that because it would break en
 
 
 ## Database
+
+CREATE DATABASE gamerest;
+
+USE gamerest;
 
 CREATE TABLE characters (
 	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -178,11 +173,6 @@ Response
 }
 
 
-## Check the integrity of the data
-
-Commment out the error activators
-
-## Request is handling response
 
 ## Things that remain to do
 

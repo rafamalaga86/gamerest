@@ -103,7 +103,7 @@ class Character {
 	 * @param DatabaseConnection database class instance
 	 * @return string returns the id of the last row inserted
 	 */
-	private static function lastID(DatabaseConnection $db) {
+	public static function lastID(DatabaseConnection $db) {
 
 		return $db->lastID();
 
