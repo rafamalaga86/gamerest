@@ -6,7 +6,7 @@ require_once __DIR__ . '/../app/library/Response.php';
 class TestDatabase extends PHPUnit_Framework_TestCase {
 
 
-	public function testDatabaseSelectRowByIDBehaviour () {
+	public function testSelectRowByID () {
 
 		require __DIR__ . '/config/database_test.php';
 
@@ -29,15 +29,15 @@ class TestDatabase extends PHPUnit_Framework_TestCase {
 		$id2 = 8888;
 		$actual2 = $db->selectRowByID('SELECT * FROM characters WHERE id = ?;', $id2);
 
-		$this->assertNotEmpty($expected1, 'function select returning an empty value');
-		$this->assertEquals($expected1, $actual1, 'Expected and actual not matching.');
+		$this->assertNotNull($expected1, 'The Character retrieved from DB is empty. Check TestDatabaseConnection::selectRowByID() and check that DB and its data is there and working');
+		$this->assertEquals($expected1, $actual1, 'Characters retrieved from DB not matching the one expected. Check TestDatabaseConnection::selectRowByID() and check that DB and its data is there and working');
 
-		$this->assertEmpty($actual2, 'message');
+		$this->assertNull($actual2, 'message');
 
 	}
 
 
-	public function testDatabaseQueryBehaviour () {
+	public function testQuery () {
 
 		require __DIR__ . '/config/database_test.php';
 
@@ -61,14 +61,14 @@ class TestDatabase extends PHPUnit_Framework_TestCase {
 
 		$delete_result = $db->query("DELETE FROM characters WHERE id = '9999'");
 
-		$this->assertNotEmpty($actual, 'Function query returning an empty value.');
-		$this->assertEquals($expected, $actual, 'Function query not returning expected value.');
-		$this->assertTrue($insert_result, 'Insert query failed.');
-		$this->assertTrue($delete_result, 'Delete query failed.');
+		$this->assertNotEmpty($actual, 'Character was not inserted properly, selectRowByID could not find it. Check TestDatabaseConnection::selectRowByID() and TestDatabaseConnection::query()');
+		$this->assertEquals($expected, $actual, 'Function query not returning expected value. Check TestDatabaseConnection::selectRowByID() and TestDatabaseConnection::query()');
+		$this->assertTrue($insert_result, 'Insert query failed. Check TestDatabaseConnection::query()');
+		$this->assertTrue($delete_result, 'Delete query failed. Check TestDatabaseConnection::query()');
 	}
 
 
-	public function testDatabaseLastIDBehaviour () {
+	public function testLastID() {
 
 		require __DIR__ . '/config/database_test.php';
 
@@ -83,8 +83,8 @@ class TestDatabase extends PHPUnit_Framework_TestCase {
 
 		$delete_result = $db->query("DELETE FROM characters WHERE id = '9999'");
 
-		$this->assertNotEmpty($actual, 'Function LastID returning empty value.');
-		$this->assertEquals($expected, $actual, 'Function LastID not returning expected value.');
+		$this->assertNotEmpty($actual, 'Function LastID returning empty value. Check TestDatabaseConnection::lastID()');
+		$this->assertEquals($expected, $actual, 'Function LastID not returning expected value. Check TestDatabaseConnection::lastID()');
 	}
 
 

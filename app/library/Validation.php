@@ -27,7 +27,7 @@ class Validation {
 	* @param string $string Json string to be validated
 	* @return bool is true if is a proper character
 	*/
-	public static function isCharacter ($string){
-		return true;
+	public static function validCharacter (){
+		return true; // Something I would like to finish, thit is actually not done
 	}
 }

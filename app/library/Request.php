@@ -32,8 +32,12 @@ class Request {
 		$this->actionMethodName = $this->verb . $this->resource;
 		$this->modelFileName = 'models/' . $this->resource . '.php';
 
-		if ( $this->verb == 'put' || $this->verb == 'post' )
-				$this->bodyParams = $this->parseBodyParams();
+		if ( $this->verb == 'put' || $this->verb == 'post' ){
+			$this->bodyParams = $this->parseBodyParams();
+
+			if ( ! Validation::validCharacter($this) )
+				$this->setStatusCode(400); // Not a proper Character 
+		}
 
 	}
 

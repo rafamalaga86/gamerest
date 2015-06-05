@@ -11,7 +11,7 @@ class Character {
 	/**
 	 * Given an ID, finds a character with that ID
 	 * 
-	 * @throws StatusCodeException if was not success
+	 * @throws StatusCodeException 404 if it does not find the row
 	 * 
 	 * @param DatabaseConnection database class instance
 	 * @param mixed $id ID number, could be a string or an int
@@ -30,7 +30,7 @@ class Character {
 	/**
 	 * Insert a row in the characters table
 	 *
-	 * @throws StatusCodeException 500 if was not success
+	 * @throws StatusCodeException 500 if was not inserted
 	 * 
 	 * @param DatabaseConnection database class instance
 	 * @param array $character character attributes without id 
@@ -53,10 +53,10 @@ class Character {
 	/**
 	 * Update a character with that ID
 	 *
-	 * @throws StatusCodeException 404 if was not success
+	 * @throws StatusCodeException 404 if was not updated
 	 * 
 	 * @param DatabaseConnection database class instance
-	 * @param mixed ID number, could be a string or an int
+	 * @param mixed $id number, could be a string or an int
 	 * @param array $character character attributes without id 
 	 */
 	public static function update(DatabaseConnection $db, $id, $character) {
@@ -82,7 +82,7 @@ class Character {
 	/**
 	 * Delete the character with that ID
 	 * 
-	 * @throws StatusCodeException 404 if was not success
+	 * @throws StatusCodeException 404 if was not deleted
 	 *
 	 * @param DatabaseConnection database class instance
 	 * @param mixed ID number, could be a string or an int

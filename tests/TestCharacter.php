@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ .  '/../app/library/DatabaseConnection.php';
+require_once __DIR__ .  '/../app/library/StatusCodeException.php';
 require_once __DIR__ . '/../app/models/Character.php';
 
 class TestCharacter extends PHPUnit_Framework_TestCase {
@@ -41,6 +42,11 @@ class TestCharacter extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($character2, $actualCharacter2, 'Character::insert() function failing a test for Character2');
 	}
 
+
+    /**
+     * 
+     * @expectedException StatusCodeException
+     */
 	public function testDelete() {
 
 		require __DIR__ . '/config/database_test.php';
@@ -49,13 +55,11 @@ class TestCharacter extends PHPUnit_Framework_TestCase {
 		$character1 = ['name' => 'Lion Woods', 'description' => 'A wonderful zombie that plays golf better than Tiger Woods', 'type' => 'zombie', 'dead' => '1', 'stage' => '2', 'hp' => '67' ];
 		$id1 = Character::insert($db, $character1);
 		
-		$this->assertTrue(is_array(Character::find($db, $id1)));
+		$this->assertTrue( is_array(Character::find($db, $id1)), 'testDelete could not be done cause Character could not be inserted to be deleted.');
 
 		Character::delete($db, $id1);
 
-		// Character::find($db, $id1);
-
-		
+		$this->assertFalse( is_array(Character::find($db, $id1)), 'Character::delete not worked properly.');
 	}
 
 	public function testUpdate(){
@@ -69,30 +73,11 @@ class TestCharacter extends PHPUnit_Framework_TestCase {
 		$id = Character::insert($db, $character1);
 		Character::update($db, $id, $character2);
 
-		$characterFound = Character::find($db, $id);
+		$actual = Character::find($db, $id);
+		$character2['id'] = $id;
+		$expected = $character2;
 
-		$this->assertEquals($character2, $characterFound, 'Character::update() function failing a test');
+		$this->assertEquals($expected, $actual, 'Character::update() not working properly');
 	}
 }
 
-
-/*
-
-	public static function insert(DatabaseConnection $db, $character) {
-
-
-
-	}
-
-	public static function update(DatabaseConnection $db, $id, $character) {
-
-
-
-	}
-
-	public static function delete(DatabaseConnection $db, $id) {
-
-
-
-	}
-*/

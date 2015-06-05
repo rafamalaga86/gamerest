@@ -57,7 +57,7 @@ class DatabaseConnection {
 
 		$result = $statement->fetch(PDO::FETCH_ASSOC);
 
-		if ( $result === false ) 
+		if ( $result === false )
 			$result = NULL;
 
 		return $result;
