@@ -1,62 +1,6 @@
 # Gamerest
 
-Gamerest is a REST API for the game app "Ninja Golf 2: The revenge".
-
-Our brave ninja play golf in the field of their enemies. It is like an old 2D golf game, but our main character has to walk to the ball every time he hits it. In the way, he find enemies he has to defeat. As a part of the DLC, we could choose our main character to be a pirate. When the main character dies, he can continue playing as a zombie.
-
-This game will be something like:
-https://www.youtube.com/watch?v=maKuCZi7MEc
-
-It consist in 10 stages. We only sync data when the character finish the stage, or when it dies. In the database, every character will count with this columns:
-
-"name": The name of the character
-"description": Short description to make the player personalise a little their characters
-"type": The types are ninja, pirate or zombie. To be zombie it has to be dead.
-"dead": False or true.
-"stage": Last stage the character reached.
-"hp": Hit points that the character has last time.
-
-
-
-This app use Apache. htaccess in the app folder is used to send everything to index.php . I try to maximise the semantic and legibility of my code, so the code explain itself and don't need too much documentation. 
-
-
-## Tests
-
-Details of testing database are in /test/config/database_test.php and real database in /app/config/database.php . We are not using the app in production so at the momment they are the same.
-
-I am doing tests with database assuming some data inside. This data is inserted with the lines of mysql in the following section. I know Unit Test shouldn't rely on a database, but since I cannot use other packages that provides me more professional testing with databases, I was forced to do that.
-
-Regarding testing private methods: I am not doing that because it would break encapsulation. And all of those are part of a public one that is tested.
-
-
-
-
-## Database
-
-CREATE DATABASE gamerest;
-
-USE gamerest;
-
-CREATE TABLE characters (
-	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	name VARCHAR(50) NOT NULL,
-	description VARCHAR(100),
-	type ENUM('ninja', 'pirate', 'zombie') NOT NULL DEFAULT 'ninja',
-	dead bool NOT NULL,
-	stage INT UNSIGNED NOT NULL,
-	hp INT NOT NULL
-);
-
-INSERT INTO characters (name, description, type, dead, stage, hp) 
-VALUES ('Lion Woods', 'A wonderful zombie that plays golf better than Tiger Woods', 'zombie', true,  2,  67);
-
-INSERT INTO characters (name, description, type, dead, stage, hp) 
-VALUES ('Guybrush Threepwood', 'How appropriate. You fight like a cow', 'pirate', false,  5,  100);
-
-INSERT INTO characters (name, description, type, dead, stage, hp) 
-VALUES ('Peter Akarisawa', 'The greatest cyborg samurai golf player', 'ninja', false,  1,  45);
-
+Gamerest is a REST API for a game app, made from scratch to show my knowledge in the language PHP: best practises, test, standards, and design patterns.
 
 
 ## API REST
@@ -174,12 +118,68 @@ Response
 
 
 
+## Tests
+
+The tests are in the test folder.
+
+
+
+## Database
+
+CREATE DATABASE gamerest;
+
+USE gamerest;
+
+CREATE TABLE characters (
+	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	description VARCHAR(100),
+	type ENUM('ninja', 'pirate', 'zombie') NOT NULL DEFAULT 'ninja',
+	dead bool NOT NULL,
+	stage INT UNSIGNED NOT NULL,
+	hp INT NOT NULL
+);
+
+INSERT INTO characters (name, description, type, dead, stage, hp) 
+VALUES ('Lion Woods', 'A wonderful zombie that plays golf better than Tiger Woods', 'zombie', true,  2,  67);
+
+INSERT INTO characters (name, description, type, dead, stage, hp) 
+VALUES ('Guybrush Threepwood', 'How appropriate. You fight like a cow', 'pirate', false,  5,  100);
+
+INSERT INTO characters (name, description, type, dead, stage, hp) 
+VALUES ('Peter Akarisawa', 'The greatest cyborg samurai golf player', 'ninja', false,  1,  45);
+
+
+
 ## Things that remain to do
 
-There are some things that I have not done, for the sake of timing with this exercise.
+There are some things that I have not done, for the sake of timing.
 
 - Improving the status code. At the momment I am assuming that only error that a SELECT query could throw is a "404 not found" for example. That is obviously not that simple. I would have use try catch in PDO queries and check which errors should return which status codes. 
 
 - I wanted to do a Response class. It would handle some parts done from the request. It would help to handle the StatusCodeExceptions better.
 
 - I had finished the Validation class. It should validate every single piece of data of the request. And check if all the character data is within the ranges. Now is not implemented and if we send a POST with no json, we won't get a proper status code. The function isCharacter withing the class would solve this.
+
+
+
+## Explanation about what the game would be
+
+Our brave ninja play golf in the field of their enemies. It is like an old 2D golf game, but our main character has to walk to the ball every time he hits it. In the way, he find enemies he has to defeat. As a part of the DLC, we could choose our main character to be a pirate. When the main character dies, he can continue playing as a zombie.
+
+This game will be something like:
+https://www.youtube.com/watch?v=maKuCZi7MEc
+
+It consist in 10 stages. We only sync data when the character finish the stage, or when it dies. In the database, every character will count with this columns:
+
+"name": The name of the character
+"description": Short description to make the player personalise a little their characters
+"type": The types are ninja, pirate or zombie. To be zombie it has to be dead.
+"dead": False or true.
+"stage": Last stage the character reached.
+"hp": Hit points that the character has last time.
+
+
+
+This app use Apache. htaccess in the app folder is used to send everything to index.php . I try to maximise the semantic and legibility of my code, so the code explain itself and don't need too much documentation. 
+
